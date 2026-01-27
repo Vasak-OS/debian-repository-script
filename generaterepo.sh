@@ -1,25 +1,50 @@
 #!/bin/sh
 
-# Configuracion de reprepro
-echo 'VasakOS: Se Configura reprepro'
-mkdir ./pkgs/
-mkdir ./pkgs/debs/
-mkdir ./pkgs/debs/conf
-touch ./pkgs/debs/conf/{option,distributions}
-echo 'Codename: vasakos' >> pkgs/debs/conf/distributions
-echo 'Components: main' >> pkgs/debs/conf/distributions
-echo 'Architectures: amd64 arm64 armhf' >> pkgs/debs/conf/distributions
-echo 'SignWith: 307E04B769840811' >> pkgs/debs/conf/distributions
+# Limpieza y preparación
+echo 'VasakOS: Preparando repositorio'
+rm -rf ./output
+mkdir -p ./output/pool
+mkdir -p ./output/dists/vasakos/main/binary-all
 
-# Revisando clave
-echo -e "VasakOS: Firma de Repositorio"
-expect -c "spawn gpg2 --edit-key 307E04B769840811099F4077ED5D59DA704DEBE2 trust quit; send \"5\ry\r\"; expect eof"
+# Copiar .deb al repositorio
+echo 'VasakOS: Copiando paquetes'
+cp debinstall/*.deb ./output/pool/
 
-# generation of new deb repository
-echo 'VasakOS: Inicio de Configuracion del Repo'
-reprepro -V -b pkgs/debs includedeb vasakos debinstall/*deb
-echo 'VasakOS: Fin de Configuracion del Repo'
+# Cambiar a directorio
+cd ./output/pool
 
-ls pkgs/debs/dists/vasakos/main
+# Generar índice de paquetes
+echo 'VasakOS: Generando índice de paquetes'
+dpkg-scanpackages . /dev/null | gzip -9c > ../dists/vasakos/main/binary-all/Packages.gz
+dpkg-scanpackages . /dev/null > ../dists/vasakos/main/binary-all/Packages
+
+cd ../..
+
+# Generar archivo Release
+echo 'VasakOS: Generando archivo Release'
+cat > ./output/dists/vasakos/Release << 'EOF'
+Origin: VasakOS
+Label: VasakOS
+Suite: vasakos
+Codename: vasakos
+Architectures: amd64 arm64 armhf
+Components: main
+Description: VasakOS Repository
+Date: $(date -R)
+EOF
+
+
+echo ''
+echo 'VasakOS: Repositorio generado exitosamente en carpeta "output"'
+echo ''
+echo 'Estructura generada:'
+tree -L 3 ./output/ 2>/dev/null || find ./output -type f -o -type d | sort
+echo ''
+echo 'Paquetes en repositorio:'
+ls -1 ./output/pool/*.deb | wc -l
+echo 'paquetes encontrados'
+echo ''
+echo 'Contenido de Packages (primeras líneas):'
+head -30 ./output/dists/vasakos/main/binary-all/Packages
 
 
