@@ -13,12 +13,12 @@ gpg --keyserver keys.openpgp.org/ --recv-keys 307E04B769840811099F4077ED5D59DA70
 
 Opción A: Crear archivo de lista de repositorio:
 ```bash
-echo "deb [trusted=yes] https://repo.vasakos.net.ar/debian/ vasakos main" | sudo tee /etc/apt/sources.list.d/vasakos.list
+echo "deb [trusted=yes] https://repo.vasak.net.ar/debian/ vasakos main" | sudo tee /etc/apt/sources.list.d/vasakos.list
 ```
 
 Opción B: Si prefieres con verificación GPG:
 ```bash
-echo "deb https://repo.vasakos.net.ar/debian/ vasakos main" | sudo tee /etc/apt/sources.list.d/vasakos.list
+echo "deb https://repo.vasak.net.ar/debian/ vasakos main" | sudo tee /etc/apt/sources.list.d/vasakos.list
 ```
 
 ### 3. Actualizar lista de paquetes
