@@ -20,6 +20,6 @@ echo 'VasakOS: Inicio de Configuracion del Repo'
 reprepro -V -b pkgs/debs includedeb vasakos debinstall/*deb
 echo 'VasakOS: Fin de Configuracion del Repo'
 
-ls pkgs/debs/dists/patojad/main
+ls pkgs/debs/dists/vasakos/main
 
 
