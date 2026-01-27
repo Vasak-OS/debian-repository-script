@@ -6,7 +6,7 @@ Este es un repositorio Debian simple para instalar paquetes VasakOS.
 
 ### 1. Agregar la clave GPG (opcional, si usas firma)
 ```bash
-wget -qO - https://repo.vasakos.net.ar/debian/vasakos-key.gpg | sudo apt-key add -
+gpg --keyserver keys.openpgp.org/ --recv-keys 307E04B769840811099F4077ED5D59DA704DEBE2
 ```
 
 ### 2. Agregar el repositorio a tu sistema

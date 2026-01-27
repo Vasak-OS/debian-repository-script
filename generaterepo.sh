@@ -33,6 +33,14 @@ Description: VasakOS Repository
 Date: $(date -R)
 EOF
 
+# Firmar el repositorio con GPG
+echo 'VasakOS: Firma de Repositorio'
+expect -c "spawn gpg2 --edit-key 307E04B769840811099F4077ED5D59DA704DEBE2 trust quit; send \"5\ry\r\"; expect eof" 2>/dev/null || true
+
+# Crear Release.gpg (firma detachada)
+echo 'VasakOS: Generando firma GPG'
+gpg2 --default-key 307E04B769840811 --detach-sign --armor ./output/dists/vasakos/Release || true
+
 
 echo ''
 echo 'VasakOS: Repositorio generado exitosamente en carpeta "output"'
