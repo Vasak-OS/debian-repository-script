@@ -22,7 +22,7 @@ cd ../..
 
 # Generar archivo Release
 echo 'VasakOS: Generando archivo Release'
-cat > ./output/dists/vasakos/Release << 'EOF'
+cat > ./output/dists/vasakos/Release << EOF
 Origin: VasakOS
 Label: VasakOS
 Suite: vasakos
@@ -34,12 +34,16 @@ Date: $(date -R)
 EOF
 
 # Firmar el repositorio con GPG
-echo 'VasakOS: Firma de Repositorio'
-expect -c "spawn gpg2 --edit-key 307E04B769840811099F4077ED5D59DA704DEBE2 trust quit; send \"5\ry\r\"; expect eof" 2>/dev/null || true
+echo 'VasakOS: Firmando repositorio con GPG'
+KEY_ID="307E04B769840811"
 
-# Crear Release.gpg (firma detachada)
-echo 'VasakOS: Generando firma GPG'
-gpg2 --default-key 307E04B769840811 --detach-sign --armor ./output/dists/vasakos/Release || true
+# Crear archivo InRelease (Release + firma integrada)
+gpg2 --default-key $KEY_ID --clearsign --output ./output/dists/vasakos/InRelease ./output/dists/vasakos/Release
+
+# Crear Release.gpg (firma detachada - backup)
+gpg2 --default-key $KEY_ID --detach-sign --armor --output ./output/dists/vasakos/Release.gpg ./output/dists/vasakos/Release
+
+echo 'VasakOS: Repositorio firmado exitosamente'
 
 
 echo ''

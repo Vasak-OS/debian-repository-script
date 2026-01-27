@@ -4,17 +4,13 @@ Este es un repositorio Debian simple para instalar paquetes VasakOS.
 
 ## Instalación
 
-### 1. Agregar la clave GPG (opcional, si usas firma)
+### 1. Importar la clave GPG del repositorio
 ```bash
-gpg --keyserver keys.openpgp.org/ --recv-keys 307E04B769840811099F4077ED5D59DA704DEBE2
+sudo gpg --keyserver keys.openpgp.org/ --recv-keys 307E04B769840811099F4077ED5D59DA704DEBE2
+sudo gpg --export 307E04B769840811099F4077ED5D59DA704DEBE2 | sudo apt-key add -
 ```
 
 ### 2. Agregar el repositorio a tu sistema
-
-Opción A: Crear archivo de lista de repositorio:
-```bash
-echo "deb [trusted=yes] https://repo.vasak.net.ar/debian/ vasakos main" | sudo tee /etc/apt/sources.list.d/vasakos.list
-```
 
 Opción B: Si prefieres con verificación GPG:
 ```bash
@@ -38,6 +34,8 @@ output/
 ├── dists/
 │   └── vasakos/
 │       ├── Release           # Archivo de metadatos
+│       ├── InRelease         # Release + firma integrada (IMPORTANTE)
+│       ├── Release.gpg       # Firma detachada (backup)
 │       └── main/
 │           └── binary-all/
 │               ├── Packages      # Índice de paquetes (texto)
@@ -47,7 +45,6 @@ output/
 │   ├── vasak-desktop-settings_*.deb
 │   └── vasakos-icons-settings_*.deb
 └── README.md                # Este archivo
-
 ```
 
 ## Instrucciones para el servidor FTP
@@ -62,10 +59,29 @@ Ejemplo con un servidor web:
 
 ## Solución de problemas
 
-Si reciben errores de "Packages not found", verifica:
-1. Que los archivos `Packages` y `Packages.gz` existan en el servidor
-2. Que el archivo `Release` esté en la ubicación correcta
-3. Que los permisos permitan lectura pública
+### Error: "The repository is not signed"
+El repositorio debe tener un archivo `InRelease` válido:
+```bash
+# Verificar que exista:
+ls -l output/dists/vasakos/InRelease
+
+# Si falta, regenera el repositorio:
+./generaterepo.sh
+```
+
+### Error: "The following signatures couldn't be verified"
+La clave GPG no está instalada en el sistema del usuario. Asegúrate de que siga los pasos 1 y 2 de instalación.
+
+### Verificar la firma del repositorio (local)
+```bash
+gpg --verify output/dists/vasakos/InRelease
+```
+
+### Packages not found
+Verifica que existan:
+1. `Packages` y `Packages.gz` en `dists/vasakos/main/binary-all/`
+2. `Release`, `InRelease` y `Release.gpg` en `dists/vasakos/`
+3. Los permisos de lectura pública en el servidor web
 
 ## Actualizar el repositorio
 
